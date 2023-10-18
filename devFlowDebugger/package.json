@@ -1,0 +1,16 @@
+{
+  "name": "devflowdebugger",
+  "version": "1.0.0",
+  "description": "### NPM 스크립트의 이해",
+  "main": "\bapp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

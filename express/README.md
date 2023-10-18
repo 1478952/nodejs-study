@@ -52,19 +52,50 @@ app.use((req, res, next) => {
 
 ### 다른 라우트 사용법
 
+미들웨어 사용시 "/" 라우팅에 대해서만 작동하기
+
+- use([path], callback)
+
 ### 수신 요청 분석
+
+bodyParser 라이브러리를 사용하면 본문을 쉽게 분석할 수 있다.
+
+- app.use(bodyParser.urlencoded());
 
 ### POST 요청으로 미들웨어 실행 제한
 
+app.get : GET 호출만 실행
+app.post : POST 호출만 실행
+과 같이 delete, put, patch 도 가능하다
+
 ### Express 라우터 사용
+
+소스가 많아짐에 따라 라우터별로 소스를 구분해야 할 필요가있음.
+
+- routes폴더(관례일뿐임 폴더명은 달라도됨)를 만들고 내부에 js 파일을 만들어준다
+- express를 require하고 express.Router 함수로 route를 만들어주고 app.use를 사용했던것처럼 똑같이 미들웨어를 등록해준다.
+- module.exports로 내보낸 뒤 app.js에서 app.use(라우터명) 으로 등록해주면 끝
+- 순서신경써야함.
 
 ### 404 오류 페이지 추가
 
+listen전에 미들웨어를 하나 추가해준다.
+아무경로도 찾지 못했기때문에 해당 경로로 가게 되는것.
+res.status(404).send() 로 상태코드를 전달해준다.
+
 ### 경로 필터링
+
+app.js에서 app.use("/admin", 라우터명) 처럼 작성하게되면
+/admin으로 시작하는 라우터가 등록되게된다
 
 ### HTML 페이지 생성
 
 ### HTML 페이지 서비스하기
+
+html과 같은 파일을 응답시킬때는 res.sendFile 을 사용한다. express가 파일을 확인하고 타입을 자동으로 추론해준다.
+경로가 다른 파일을 import할때에는 path 모듈을 사용할 것.
+path.join(**dirname, "../", "views", "shop.html") 처럼 경로를 지정할 수 있다.
+**dirname은 현재파일이 위치한 폴더의 절대경로를 불러와줌
 
 ### 404 페이지 반환
 
@@ -72,6 +103,23 @@ app.use((req, res, next) => {
 
 ### 내비게이션을 위한 헬퍼 함수 사용
 
+HTML 페이지 서비스하기 편에서 사용했던 경로지정 방법은 쪼끔 지저분하다.
+
+util 함수를 만들어 경로를 조금 간소화시켜준다
+
+// util/path.js
+module.exports = require("path").dirname(require.main.filename);
+루트폴더에 경로를 잡아준다.
+
+const rootDir = require("../util/path");
+path.join(rootDir, "views", "shop.html") 처럼 경로를 지정할 수 있다.
+
 ### 페이지 스타일링
 
 ### 정적으로 파일 서비스하기
+
+pulbic 폴더를 생성하고 미들웨어에 등록해준다
+
+```js
+app.use(express.static(path.join(__dirname, "public")));
+```
