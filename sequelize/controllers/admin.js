@@ -21,6 +21,7 @@ exports.postAddProduct = async (req, res, next) => {
       price,
       description,
     });
+
     // await Product.create({
     //   title,
     //   imageUrl,

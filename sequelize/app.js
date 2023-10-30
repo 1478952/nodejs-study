@@ -9,6 +9,8 @@ const Product = require("./models/product");
 const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 const app = express();
 
@@ -45,10 +47,15 @@ Product.belongsTo(User, {
   constraints: true,
   onDelete: "CASCADE",
 });
+Order.belongsTo(User);
+User.hasMany(Order);
+Order.belongsToMany(Product, { through: OrderItem });
 
 async function appStart() {
   try {
-    await sequelize.sync({ force: true }); // force: 덮어쓰기 기능 개발용일때만 사용권장
+    await sequelize.sync({
+      // force: true,
+    }); // force: 덮어쓰기 기능 개발용일때만 사용권장
 
     const user = await User.findByPk(1);
 
@@ -57,11 +64,12 @@ async function appStart() {
         name: "kjw",
         email: "test@test.com",
       });
+      await user.createCart();
     }
 
     app.listen(3000);
   } catch (error) {
-    console.log(err);
+    console.log(error);
   }
 }
 
