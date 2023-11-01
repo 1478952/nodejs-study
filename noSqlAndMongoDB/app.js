@@ -14,17 +14,19 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
+const User = require("./models/user");
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(async (req, res, next) => {
-  // try {
-  //   const user = await User.findByPk(1);
-  //   req.user = user;
-  next();
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    const user = await User.findById("654230e7c61f59a5e189bfbf");
+    req.user = new User(user.name, user.email, user.cart, user._id);
+    next();
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.use("/admin", adminRoutes);
