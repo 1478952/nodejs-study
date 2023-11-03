@@ -1,3 +1,4 @@
+const Order = require("../models/order");
 const Product = require("../models/product");
 
 exports.getProducts = async (req, res, next) => {
@@ -42,7 +43,9 @@ exports.getIndex = async (req, res, next) => {
 
 exports.getCart = async (req, res, next) => {
   try {
-    const products = await req.user.getCart();
+    const user = await req.user.populate("cart.items.productId").execPopulate();
+    const products = user.cart.items;
+
     res.render("shop/cart", {
       path: "/cart",
       pageTitle: "Your Cart",
@@ -75,13 +78,33 @@ exports.postCartDeleteProduct = async (req, res, next) => {
 };
 
 exports.postOrder = async (req, res, next) => {
-  await req.user.addOrder();
+  const user = await req.user.populate("cart.items.productId").execPopulate();
+  const products = user.cart.items.map((item) => {
+    return {
+      quantity: item.quantity,
+      product: { ...item.productId._doc },
+    };
+  });
+
+  const order = new Order({
+    user: {
+      name: req.user.name,
+      userId: req.user,
+    },
+    products: products,
+  });
+
+  await order.save();
+  await req.user.clearCart();
 
   res.redirect("/orders");
 };
 
 exports.getOrders = async (req, res, next) => {
-  const orders = await req.user.getOrders();
+  const orders = await Order.find({
+    "user.userId": req.user._id,
+  });
+
   res.render("shop/orders", {
     path: "/orders",
     pageTitle: "Your Orders",

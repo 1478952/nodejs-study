@@ -14,7 +14,13 @@ exports.postAddProduct = async (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
   try {
-    const product = new Product({ title, price, imageUrl, description });
+    const product = new Product({
+      title,
+      price,
+      imageUrl,
+      description,
+      userId: req.user._id,
+    });
     await product.save();
 
     res.redirect("/admin/products");
@@ -54,13 +60,11 @@ exports.postEditProduct = async (req, res, next) => {
   const updatedDesc = req.body.description;
 
   try {
-    const product = new Product(
-      updatedTitle,
-      updatedPrice,
-      updatedImageUrl,
-      updatedDesc,
-      prodId
-    );
+    const product = await Product.findById(prodId);
+    product.title = updatedTitle;
+    product.price = updatedPrice;
+    product.imageUrl = updatedImageUrl;
+    product.description = updatedDesc;
     await product.save();
     res.redirect("/admin/products");
   } catch (error) {
@@ -70,7 +74,9 @@ exports.postEditProduct = async (req, res, next) => {
 
 exports.getProducts = async (req, res, next) => {
   try {
-    const products = await Product.fetchAll();
+    const products = await Product.find();
+    // .select("title price -_id")
+    // .populate("userId", "name");
     res.render("admin/products", {
       prods: products,
       pageTitle: "Admin Products",
@@ -84,7 +90,7 @@ exports.getProducts = async (req, res, next) => {
 exports.postDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
   try {
-    const product = await Product.deleteById(prodId);
+    await Product.findByIdAndDelete(prodId);
     res.redirect("/admin/products");
   } catch (error) {
     console.log(error);
