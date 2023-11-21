@@ -18,6 +18,7 @@ const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "sessions",
+  useUnifiedTopology: true,
 });
 const csrfProtection = csrf();
 
