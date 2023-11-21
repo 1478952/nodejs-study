@@ -34,9 +34,7 @@ app.use(errorController.get404);
 
 const connect = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://1478952:rlawjddns@cluster0.pjcihw4.mongodb.net/shop?retryWrites=true&w=majority"
-    );
+    await mongoose.connect(process.env.MONGODB_URI);
     const findUser = User.findOne();
     if (!findUser) {
       const user = new User({

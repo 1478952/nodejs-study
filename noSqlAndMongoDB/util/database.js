@@ -3,9 +3,7 @@ const { MongoClient } = require("mongodb");
 let _db;
 
 const mongoConnect = (cb) => {
-  MongoClient.connect(
-    "mongodb+srv://1478952:rlawjddns@cluster0.pjcihw4.mongodb.net/shop?retryWrites=true&w=majority"
-  )
+  MongoClient.connect(process.env.MONGODB_URI)
     .then((client) => {
       console.log("Connected!");
       _db = client.db();
